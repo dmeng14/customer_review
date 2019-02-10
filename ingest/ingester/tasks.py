@@ -34,8 +34,5 @@ class BaseTask(Task):
 @app.task(name='ingester.tasks.ingest_data_to_db', base=BaseTask, bind=True)
 def ingest_data_to_db(self, key) -> None:
     with tmp_dir() as working_dir:
-        logger.info(f'here is key {key}')
         filepath = download_file(key, working_dir)
-        print(filepath)
-        logger.info(f'file downloaded at {filepath}')
         load_review(filepath)

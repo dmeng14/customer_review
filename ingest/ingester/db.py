@@ -57,7 +57,7 @@ def load_review(filepath) -> None:
     new_file = filepath[:-3]
     with gzip.open(filepath, 'r') as f_in, open(new_file, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
-    logger.info(f'dest file {new_file}')
+    logger.debug(f'dest file location: {new_file}')
 
     db_params = get_db_config(MYSQL)
     with db_connection(**db_params) as cursor:

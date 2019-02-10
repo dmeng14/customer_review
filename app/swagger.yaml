@@ -1,0 +1,74 @@
+swagger: '2.0'
+info:
+  title: Customer Review API
+  version: '1.0'
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - https
+paths:
+  /healthcheck:
+    get:
+      tags: [Health]
+      operationId: api.routes.healthcheck
+      summary: Health Check
+      responses:
+        '200':
+          description: Status message from server describing current health
+  /most_reviewed_product:
+    get:
+      tags: [Product Review]
+      operationId: api.routes.most_reviewed_product
+      summary: Find the top count reviewed products
+      parameters:
+        - name: count
+          description: Number of items to return
+          in: query
+          type: integer
+          minimum: 1
+          default: 10
+          x-example: 5
+      responses:
+        '200':
+          description: the top reviewed procuts
+          # schema:
+          #   type: object
+          #   properties:
+          #     product_title:
+          #       type: string
+          #       description: title of product
+          #     review_count:
+          #       type: integer
+          #       description: number of review for the product
+  /product_review:
+    get:
+      tags: [Product Review]
+      operationId: api.routes.product_review
+      summary: Get the review for product_id
+      parameters:
+        - name: product_id
+          description: the ID of product
+          in: query
+          type: string
+          required: true
+          x-example: 'B0042TNMMS'
+      responses:
+        '200':
+          description: all the review of product_id
+  /customer_review:
+    get:
+      tags: [Customer Review]
+      operationId: api.routes.customer_review
+      summary: Get the review submitted by customer_id
+      parameters:
+        - name: customer_id
+          description: the ID of customer
+          in: query
+          type: string
+          required: true
+          x-example: '30003523'
+      responses:
+        '200':
+          description: all the review submitted by customer_id
