@@ -1,16 +1,19 @@
-FROM python:3.7-alpine3.7
+FROM python:3.6-slim
 
 # System setup
+ENV USER app
 ENV dir /home/app
 
+RUN useradd -ms /bin/bash ${USER}
+
 # System dependencies
-RUN apk add --no-cache \
-        musl \
-        build-base \
-        linux-headers \
-        postgresql-dev \
-        ca-certificates \
-    && rm -rf /var/cache/apk/*
+RUN  apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  git \
+  libffi-dev \
+  unzip \
+  default-libmysqlclient-dev \
+  ca-certificates
 
 WORKDIR ${dir}
 
@@ -20,9 +23,7 @@ RUN pip3 install -r requirements.txt
 
 COPY api/ ${dir}/api/
 COPY app.py ${dir}/app.py
-COPY template/ ${dir}/template/
+COPY swagger.yaml ${dir}/swagger.yaml
 COPY test/ ${dir}/test/
-
-EXPOSE 8000
 
 CMD python3 app.py

@@ -18,7 +18,7 @@ services:
     depends_on:
       - mysql
     ports:
-      - "8000:8000"
+      - "8000:5000"
   ingester:
     build: ./ingest/.
     image: dmeng14/ingest_review

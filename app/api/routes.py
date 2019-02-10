@@ -29,7 +29,7 @@ def product_review(product_id):
     data_set = review_q.all()
     reviews = [item._asdict() for item in data_set]
     ratings = [review.get('star_rating') for review in reviews if review.get('star_rating')]
-    average_rating = sum(ratings) / len(ratings)
+    average_rating = sum(ratings) / len(ratings) if ratings else None
     product_q = DB.session.query(
         Reviews.product_title).filter(Reviews.product_id == product_id)
     product = product_q.first()
