@@ -2,7 +2,8 @@ FROM python:3.6-slim
 
 # System setup
 ENV USER app
-ENV dir /home/app
+ENV APP_DIR=/home/app
+ENV PYTHONPATH=$APP_DIR
 
 RUN useradd -ms /bin/bash ${USER}
 
@@ -15,15 +16,15 @@ RUN  apt-get update && apt-get install -y --no-install-recommends \
   default-libmysqlclient-dev \
   ca-certificates
 
-WORKDIR ${dir}
+WORKDIR $APP_DIR
 
 # App dependencies
-COPY requirements.txt ${dir}/
+COPY requirements.txt $APP_DIR/
 RUN pip3 install -r requirements.txt
 
-COPY api/ ${dir}/api/
-COPY app.py ${dir}/app.py
-COPY swagger.yaml ${dir}/swagger.yaml
-COPY test/ ${dir}/test/
+COPY api/ $APP_DIR/api/
+COPY app.py $APP_DIR/app.py
+COPY swagger.yaml $APP_DIR/swagger.yaml
+COPY test/ $APP_DIR/test/
 
 CMD python3 app.py
