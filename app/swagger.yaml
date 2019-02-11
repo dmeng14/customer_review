@@ -8,6 +8,28 @@ produces:
   - application/json
 schemes:
   - https
+definitions:
+  CustomerReviewModel:
+    type: object
+    required:
+      - product_id
+      - star_rating
+    properties:
+      product_id:
+        type: string
+        example: 'B0042TNMMS'
+      product_title:
+        type: string
+        example: 'Desk'
+      review_headline:
+        type: string
+        example: 'good review'
+      review_body:
+        type: string
+        example: 'this is awesome product'
+      star_rating:
+        type: integer
+        example: 5
 paths:
   /healthcheck:
     get:
@@ -17,6 +39,40 @@ paths:
       responses:
         '200':
           description: Status message from server describing current health
+  /product_review:
+    get:
+      tags: [Product Review]
+      operationId: api.routes.product_review
+      summary: Get the review for product_id
+      parameters:
+        - name: product_id
+          description: the ID of product
+          in: query
+          type: string
+          required: true
+          x-example: 'B0042TNMMS'
+      responses:
+        '200':
+          description: all the review of product_id
+        '404':
+          description: product_id not found
+  /customer_review:
+    get:
+      tags: [Customer Review]
+      operationId: api.routes.customer_review
+      summary: Get the review submitted by customer_id
+      parameters:
+        - name: customer_id
+          description: the ID of customer
+          in: query
+          type: string
+          required: true
+          x-example: '30003523'
+      responses:
+        '200':
+          description: all the review submitted by customer_id
+        '404':
+          description: customer_id not found
   /most_reviewed_product:
     get:
       tags: [Product Review]
@@ -33,42 +89,18 @@ paths:
       responses:
         '200':
           description: the top reviewed procuts
-          # schema:
-          #   type: object
-          #   properties:
-          #     product_title:
-          #       type: string
-          #       description: title of product
-          #     review_count:
-          #       type: integer
-          #       description: number of review for the product
-  /product_review:
-    get:
-      tags: [Product Review]
-      operationId: api.routes.product_review
-      summary: Get the review for product_id
-      parameters:
-        - name: product_id
-          description: the ID of product
-          in: query
-          type: string
-          required: true
-          x-example: 'B0042TNMMS'
-      responses:
-        '200':
-          description: all the review of product_id
-  /customer_review:
-    get:
+  /update_review:
+    post:
       tags: [Customer Review]
-      operationId: api.routes.customer_review
-      summary: Get the review submitted by customer_id
+      operationId: api.routes.update_review
+      summary: Insert a customer review
       parameters:
-        - name: customer_id
-          description: the ID of customer
-          in: query
-          type: string
-          required: true
-          x-example: '30003523'
+        - in: body
+          name: review_payload
+          schema:
+            $ref: "#/definitions/CustomerReviewModel"
       responses:
         '200':
-          description: all the review submitted by customer_id
+          description: review inserted to table
+        '400':
+          description: invalid payload

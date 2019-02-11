@@ -1,5 +1,9 @@
-from api.db import DB, Reviews
+import json
+import datetime
 from sqlalchemy import func, desc
+from flask import request, make_response
+from api.db import DB, Reviews
+from api import validate
 
 
 def healthcheck():
@@ -51,3 +55,36 @@ def customer_review(customer_id):
     data_set = query.all()
     data = [item._asdict() for item in data_set]
     return data
+
+
+def update_review():
+    payload = request.get_json() or {}
+    is_valid, err = validate.validate_create_reivew(payload)
+    if not is_valid:
+        return make_response(
+            json.dumps({"messages": err}), 400, {"Content-Type": "application/json"}
+        )
+    review = Reviews(
+        marketplace=payload.get('marketplace'),
+        customer_id=payload.get('customer_id'),
+        review_id=payload.get('review_id'),
+        product_id=payload.get('product_id'),
+        product_parent=payload.get('product_parent'),
+        product_title=payload.get('product_title'),
+        product_category=payload.get('product_category'),
+        star_rating=payload.get('star_rating'),
+        helpful_votes=payload.get('helpful_votes'),
+        total_votes=payload.get('total_votes'),
+        vine=payload.get('vine'),
+        verified_purchase=payload.get('verified_purchase'),
+        review_headline=payload.get('review_headline'),
+        review_body=payload.get('review_body'),
+        review_date=payload.get('review_date'),
+    )
+    DB.session.add(review)
+    DB.session.commit()
+    return make_response(
+        json.dumps({"id": review.id}),
+        200,
+        {"Content-Type": "application/json"},
+    )
