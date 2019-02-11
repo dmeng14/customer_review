@@ -9,3 +9,4 @@ clean:
 test: clean
 	docker-compose build
 	docker-compose run --rm app pytest -svv --cov=app --cov-report term-missing
+	docker-compose run --rm ingester pytest -svv --cov=ingester --cov-report term-missing

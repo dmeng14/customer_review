@@ -1,10 +1,11 @@
 FROM python:3.6-slim
 
 # System setup
-ENV USER app
-ENV dir /home/app
+ENV USER=app
+ENV APP_DIR=/home/app
+ENV PYTHONPATH=$APP_DIR
 
-RUN useradd -ms /bin/bash ${USER}
+RUN useradd -ms /bin/bash $USER
 
 # System dependencies
 RUN  apt-get update && apt-get install -y --no-install-recommends \
@@ -15,19 +16,19 @@ RUN  apt-get update && apt-get install -y --no-install-recommends \
   default-libmysqlclient-dev \
   ca-certificates
 
-WORKDIR ${dir}
+WORKDIR $APP_DIR
 
 # App dependencies
-COPY requirements.txt ${dir}/
+COPY requirements.txt $APP_DIR/
 RUN pip3 install -r requirements.txt
 
-COPY ingester/ ${dir}/ingester/
-COPY test/ ${dir}/test/
-COPY run.sh ${dir}/
+COPY ingester/ $APP_DIR/ingester/
+COPY test/ $APP_DIR/test/
+COPY run.sh $APP_DIR/
 
-RUN chown -R ${USER}: ${dir}
+RUN chown -R $USER: $APP_DIR
 
 # App setup
-USER ${USER}
+USER $USER
 
 CMD ["./run.sh"]

@@ -1,11 +1,8 @@
 FROM python:3.6-slim
 
 # System setup
-ENV USER app
 ENV APP_DIR=/home/app
 ENV PYTHONPATH=$APP_DIR
-
-RUN useradd -ms /bin/bash ${USER}
 
 # System dependencies
 RUN  apt-get update && apt-get install -y --no-install-recommends \
