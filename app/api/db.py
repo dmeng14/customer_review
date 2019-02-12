@@ -1,4 +1,5 @@
 import datetime
+from collections import OrderedDict
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -24,3 +25,9 @@ class Reviews(db.Model):
     review_headline = db.Column(db.Text)
     review_body = db.Column(db.Text)
     review_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def _asdict(self):
+        result = OrderedDict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+        return result

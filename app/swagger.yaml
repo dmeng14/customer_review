@@ -79,15 +79,15 @@ paths:
           description: all the review of product_id
         '404':
           description: product_id not found
-  /customer_review:
+  /customer_review/{customer_id}:
     get:
-      tags: [Customer Review]
+      tags: [Product Review]
       operationId: api.routes.customer_review
       summary: Get the review submitted by customer_id
       parameters:
         - name: customer_id
           description: the ID of customer
-          in: query
+          in: path
           type: string
           required: true
           x-example: '30003523'
@@ -114,7 +114,7 @@ paths:
           description: the top reviewed procuts
   /insert_review:
     post:
-      tags: [Customer Review]
+      tags: [Reviews]
       operationId: api.routes.insert_review
       summary: Insert a customer review
       parameters:
@@ -129,7 +129,7 @@ paths:
           description: invalid payload
   /update_review:
     put:
-      tags: [Customer Review]
+      tags: [Reviews]
       operationId: api.routes.update_review
       summary: Update a customer review
       parameters:
@@ -146,7 +146,7 @@ paths:
           description: review_id not found
   /delete_review/{review_id}:
     delete:
-      tags: [Customer Review]
+      tags: [Reviews]
       operationId: api.routes.delete_review
       summary: Delete a customer review
       parameters:
@@ -159,5 +159,22 @@ paths:
       responses:
         '200':
           description: review deleted
+        '404':
+          description: review not found
+  /get_review/{review_id}:
+    get:
+      tags: [Reviews]
+      operationId: api.routes.get_review
+      summary: Get a customer review
+      parameters:
+        - name: review_id
+          description: review_id in the dataset
+          in: path
+          required: true
+          type: string
+          x-example: 'review_id_abc'
+      responses:
+        '200':
+          description: review found
         '404':
           description: review not found

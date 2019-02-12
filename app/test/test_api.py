@@ -1,6 +1,6 @@
 import json
 from app import app
-from api.db import DB
+from api.db import DB, Reviews
 import pytest
 from alchemy_mock.mocking import UnifiedAlchemyMagicMock
 
@@ -20,7 +20,7 @@ def test_most_reviewed_product(client):
 
 def test_customer_review(client):
     DB.session = UnifiedAlchemyMagicMock()
-    rsp = client.get("/customer_review?customer_id=ABC")
+    rsp = client.get("/customer_review/ABC")
     assert rsp.status_code == 200
 
 
@@ -93,3 +93,13 @@ def test_delete_review(client):
         content_type="application/json",
     )
     assert rsp.status_code == 200
+
+
+def test_get_review(client):
+    DB.session = UnifiedAlchemyMagicMock()
+
+    rsp = client.get(
+        "/get_review/review_abc",
+        content_type="application/json",
+    )
+    assert rsp.status_code == 404

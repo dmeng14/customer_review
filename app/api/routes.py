@@ -1,6 +1,6 @@
 import json
 from sqlalchemy import func, desc
-from flask import request, make_response
+from flask import request, make_response, jsonify
 from api.db import DB, Reviews
 from api import validate
 
@@ -147,3 +147,16 @@ def delete_review(review_id):
         200,
         {"Content-Type": "application/json"},
     )
+
+
+def get_review(review_id):
+    data = DB.session.query(
+        Reviews
+    ).filter(
+        Reviews.review_id == review_id
+    ).first()
+    if not data:
+        return make_response(
+            json.dumps({"messages": f'{review_id} not found'}), 404, {"Content-Type": "application/json"}
+        )
+    return data._asdict()
