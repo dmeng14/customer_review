@@ -21,12 +21,35 @@ definitions:
       product_title:
         type: string
         example: 'Desk'
+      customer_id:
+        type: string
+        example: '30003523'
+      review_id:
+        type: string
+        example: 'review_id_abc'
       review_headline:
         type: string
         example: 'good review'
       review_body:
         type: string
         example: 'this is awesome product'
+      star_rating:
+        type: integer
+        example: 5
+  CustomerReviewUpdate:
+    type: object
+    required:
+      - review_id
+    properties:
+      review_id:
+        type: string
+        example: 'review_id_abc'
+      review_headline:
+        type: string
+        example: 'good review'
+      review_body:
+        type: string
+        example: 'this is bad product'
       star_rating:
         type: integer
         example: 5
@@ -89,10 +112,10 @@ paths:
       responses:
         '200':
           description: the top reviewed procuts
-  /update_review:
+  /insert_review:
     post:
       tags: [Customer Review]
-      operationId: api.routes.update_review
+      operationId: api.routes.insert_review
       summary: Insert a customer review
       parameters:
         - in: body
@@ -104,3 +127,37 @@ paths:
           description: review inserted to table
         '400':
           description: invalid payload
+  /update_review:
+    put:
+      tags: [Customer Review]
+      operationId: api.routes.update_review
+      summary: Update a customer review
+      parameters:
+        - in: body
+          name: review_payload
+          schema:
+            $ref: "#/definitions/CustomerReviewUpdate"
+      responses:
+        '200':
+          description: review updated
+        '400':
+          description: invalid payload
+        '404':
+          description: review_id not found
+  /delete_review/{review_id}:
+    delete:
+      tags: [Customer Review]
+      operationId: api.routes.delete_review
+      summary: Delete a customer review
+      parameters:
+        - name: review_id
+          description: review_id in the dataset
+          in: path
+          required: true
+          type: string
+          x-example: 'review_id_abc'
+      responses:
+        '200':
+          description: review deleted
+        '404':
+          description: review not found

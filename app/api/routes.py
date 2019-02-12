@@ -1,5 +1,4 @@
 import json
-import datetime
 from sqlalchemy import func, desc
 from flask import request, make_response
 from api.db import DB, Reviews
@@ -57,7 +56,7 @@ def customer_review(customer_id):
     return data
 
 
-def update_review():
+def insert_review():
     payload = request.get_json() or {}
     is_valid, err = validate.validate_create_reivew(payload)
     if not is_valid:
@@ -85,6 +84,66 @@ def update_review():
     DB.session.commit()
     return make_response(
         json.dumps({"id": review.id}),
+        200,
+        {"Content-Type": "application/json"},
+    )
+
+
+def update_review():
+    payload = request.get_json() or {}
+    is_valid, err = validate.validate_update_reivew(payload)
+    if not is_valid:
+        return make_response(
+            json.dumps({"messages": err}), 400, {"Content-Type": "application/json"}
+        )
+    (
+        DB.session.query(Reviews)
+        .filter(Reviews.review_id == payload['review_id'])
+        .first_or_404()
+    )
+
+    payload_list = dict(
+        marketplace=payload.get('marketplace'),
+        customer_id=payload.get('customer_id'),
+        product_id=payload.get('product_id'),
+        product_parent=payload.get('product_parent'),
+        product_title=payload.get('product_title'),
+        product_category=payload.get('product_category'),
+        star_rating=payload.get('star_rating'),
+        helpful_votes=payload.get('helpful_votes'),
+        total_votes=payload.get('total_votes'),
+        vine=payload.get('vine'),
+        verified_purchase=payload.get('verified_purchase'),
+        review_headline=payload.get('review_headline'),
+        review_body=payload.get('review_body'),
+        review_date=payload.get('review_date'),)
+
+    res = {k: v for k, v in payload_list.items() if v is not None}
+
+    DB.session.query(
+        Reviews
+    ).filter(
+        Reviews.review_id == payload['review_id']
+    ).update(res)
+
+    DB.session.commit()
+    return make_response(
+        json.dumps({"review_id": payload['review_id']}),
+        200,
+        {"Content-Type": "application/json"},
+    )
+
+
+def delete_review(review_id):
+    (
+        DB.session.query(Reviews)
+        .filter(Reviews.review_id == review_id)
+        .first_or_404()
+    )
+
+    DB.session.query(Reviews).filter(Reviews.review_id == review_id).delete()
+    return make_response(
+        json.dumps({"review_id": review_id}),
         200,
         {"Content-Type": "application/json"},
     )
