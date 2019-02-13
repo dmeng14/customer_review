@@ -15,17 +15,22 @@ class DBConnectionError(Exception):
 
 
 @contextlib.contextmanager
-def db_connection(
-    host, user, passwd, db, charset="utf8", port=3306, cursorclass=mc.Cursor
-):
+def db_connection(db_config):
     try:
         conn = MySQLdb.connect(
-            host, user, passwd, db, port, charset=charset, connect_timeout=60 * 5, local_infile=1
+            db_config['host'],
+            db_config['user'],
+            db_config['passwd'],
+            db_config['db'],
+            db_config.get('port', 3306),
+            charset=db_config.get('charset', 'utf8'),
+            connect_timeout=60 * 5,
+            local_infile=1
         )
     except MySQLdb.Error as e:
         raise DBConnectionError("Error connecting to database") from e
     else:
-        cursor = conn.cursor(cursorclass)
+        cursor = conn.cursor(mc.Cursor)
         try:
             yield cursor
             cursor.close()
@@ -38,7 +43,7 @@ def db_connection(
             conn.close()
 
 
-def load_review(filepath) -> None:
+def load_review(filepath: str) -> None:
     """ load a file into the customer_review table  """
     sql = """
         {load_data_clause}
@@ -59,7 +64,7 @@ def load_review(filepath) -> None:
         shutil.copyfileobj(f_in, f_out)
     logger.debug(f'dest file location: {new_file}')
 
-    db_params = get_db_config(MYSQL)
-    with db_connection(**db_params) as cursor:
+    db_config = get_db_config(MYSQL)
+    with db_connection(db_config) as cursor:
         sql = sql.format(load_data_clause=f"LOAD DATA LOCAL INFILE '{new_file}'")
         cursor.execute(sql)

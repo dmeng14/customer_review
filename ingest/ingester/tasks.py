@@ -1,5 +1,5 @@
 import logging
-from celery import Celery, Task
+from celery import Celery, Task, group
 from ingester import config as cfg
 from ingester.aws import download_file
 from ingester.db import load_review
@@ -31,8 +31,18 @@ class BaseTask(Task):
         logger.info(f'Ingestion failed')
 
 
+@app.task(name='ingester.tasks.task_dispacher', base=BaseTask, bind=True)
+def task_dispacher(self, keys: list) -> None:
+    group(
+        [
+            ingest_data_to_db.si(key)
+            for key in keys
+        ]
+    )()
+
+
 @app.task(name='ingester.tasks.ingest_data_to_db', base=BaseTask, bind=True)
-def ingest_data_to_db(self, key) -> None:
+def ingest_data_to_db(self, key: str) -> None:
     with tmp_dir() as working_dir:
         filepath = download_file(key, working_dir)
         load_review(filepath)
