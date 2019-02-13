@@ -1,6 +1,6 @@
 import json
 from app import app
-from api.db import DB, Reviews
+from api.db import DB
 import pytest
 from alchemy_mock.mocking import UnifiedAlchemyMagicMock
 

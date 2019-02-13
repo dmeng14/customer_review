@@ -1,6 +1,6 @@
 import json
 from sqlalchemy import func, desc
-from flask import request, make_response, jsonify
+from flask import request, make_response
 from api.db import DB, Reviews
 from api import validate
 
@@ -142,6 +142,7 @@ def delete_review(review_id):
     )
 
     DB.session.query(Reviews).filter(Reviews.review_id == review_id).delete()
+    DB.session.commit()
     return make_response(
         json.dumps({"review_id": review_id}),
         200,
