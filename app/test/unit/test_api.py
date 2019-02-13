@@ -1,8 +1,8 @@
 import json
-from app import app
-from api.db import DB
 import pytest
 from alchemy_mock.mocking import UnifiedAlchemyMagicMock
+from app import app
+from api.db import DB
 
 
 @pytest.fixture
